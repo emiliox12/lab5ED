@@ -9,7 +9,7 @@ import java.util.function.Predicate;
  * @author Fernando De la Rosa
  *
  */
-public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
+public class ArregloDinamico<T extends Comparable<T>> implements ILista<T>, Comparable<ILista<T>>{
 	/**
 	 * Capacidad maxima del arreglo
 	 */
@@ -19,7 +19,6 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 	 * posicion 0)
 	 */
 	private int currentSize;
-	private boolean ascending;
 	/**
 	 * Arreglo de elementos de tamaNo maximo
 	 */
@@ -30,11 +29,10 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 	 * 
 	 * @param max Capacidad maxima inicial
 	 */
-	public ArregloDinamico(int max, boolean ascending) {
+	public ArregloDinamico(int max) {
 		maxSize = max;
 		elements = (T[]) new Comparable[maxSize];
 		currentSize = 0;
-		this.ascending = ascending;
 	}
 
 	public T buscar(T dato) {
@@ -110,7 +108,8 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 
 	@Override
 	public void insertElement(T element, int pos) {
-
+		int position = (pos <= maxSize) ? pos : maxSize;
+		elements[pos] = element;
 	}
 
 	@Override
@@ -200,9 +199,9 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 			return null;
 		}
 		int elemCount = (numElementos < currentSize) ? numElementos : currentSize;
-		ArregloDinamico<T> newArray = new ArregloDinamico<>(numElementos + 20, ascending);
+		ArregloDinamico<T> newArray = new ArregloDinamico<>(numElementos + 20);
 		for (int i = 0; i < elemCount; i++) {
-			newArray.insertElement(elements[i], i);
+			newArray.addLast(elements[i]);
 		}
 		return newArray;
 	}
@@ -213,7 +212,7 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 			return null;
 		}
 		int elemCount = (size - pos < currentSize) ? size : currentSize;
-		ArregloDinamico<T> newArray = new ArregloDinamico<>(size + 20, ascending);
+		ArregloDinamico<T> newArray = new ArregloDinamico<>(size + 20);
 		for (int i = pos - 1; i < elemCount; i++) {
 			newArray.insertElement(elements[i], i);
 		}
@@ -222,7 +221,7 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 
 	@Override
 	public ILista<T> filetr(Predicate<T> p) {
-		ArregloDinamico<T> newArray = new ArregloDinamico<>(currentSize, ascending);
+		ArregloDinamico<T> newArray = new ArregloDinamico<>(currentSize);
 		for (int i = 0; i < currentSize; i++) {
 			if (p.test(elements[i])) {
 				newArray.addLast(elements[i]);
@@ -265,5 +264,10 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T> {
 		}
 		currentSize--;
 		return toEliminate;
+	}
+
+	@Override
+	public int compareTo(ILista<T> otherList) {
+		return this.firstElement().compareTo(otherList.firstElement());
 	}
 }

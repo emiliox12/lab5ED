@@ -31,4 +31,18 @@ public class NodoTS<K extends Comparable<K>, V> implements Comparable<NodoTS<K, 
 	public void setKey(K key) {
 		this.key = key;
 	}
+
+	public void setEmpty() {
+		this.key = null;
+		this.value = null;
+	}
+	
+	public boolean isEmpty() {
+		return key == null && value == null;
+	}
+	
+	@Override
+	public String toString() {
+		return "" + key;
+	}
 }

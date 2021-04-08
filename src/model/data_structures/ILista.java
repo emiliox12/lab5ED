@@ -2,7 +2,7 @@ package model.data_structures;
 
 import java.util.function.Predicate;
 
-public interface ILista<T extends Comparable<T>> {
+public interface ILista<T extends Comparable<T>> extends Comparable<ILista<T>> {
 
 	/**
 	 * Agrega un elemento al inicio de la lista
@@ -50,7 +50,7 @@ public interface ILista<T extends Comparable<T>> {
 	 * @return el elemento eliminado
 	 */
 	T deleteElementPos(int pos);
-	
+
 	/*
 	 * Elimina el elemento de una posición válida. Se retorna el elemento eliminado.
 	 * 
@@ -137,25 +137,30 @@ public interface ILista<T extends Comparable<T>> {
 	 * @param elem
 	 */
 	void changeInfo(int pos, T elem);
-	
+
 	/**
-	 * Crear una sublista de la lista original (this).
-	 * Los elementos se toman en el mismo orden como aparecen en la lista original (this).
-	 * @param número de elementos que contendrá la sublista. Si el número es superior al tamaño
-	 * original de la lista, se obtiene una copia de la lista original.
-	* @return sublista creada con la misma representación de la lista original (this).
+	 * Crear una sublista de la lista original (this). Los elementos se toman en el
+	 * mismo orden como aparecen en la lista original (this).
+	 * 
+	 * @param número de elementos que contendrá la sublista. Si el número es
+	 *               superior al tamaño original de la lista, se obtiene una copia
+	 *               de la lista original.
+	 * @return sublista creada con la misma representación de la lista original
+	 *         (this).
 	 */
 	public ILista<T> sublista(int numElementos);
-	
+
 	/**
-	* Retorna una sublista con los elementos desde pos hasta la cantidad solicitada.
-	* @param pos Posición desde la que se quiere obtener la sublista.
-	* @param size Tamaño de la sublista.
-	* @return Una nueva lista con los elementos solicitados.
-	*/
+	 * Retorna una sublista con los elementos desde pos hasta la cantidad
+	 * solicitada.
+	 * 
+	 * @param pos  Posición desde la que se quiere obtener la sublista.
+	 * @param size Tamaño de la sublista.
+	 * @return Una nueva lista con los elementos solicitados.
+	 */
 	public ILista<T> subList(int pos, int size);
-	
+
 	public ILista<T> filetr(Predicate<T> p);
-	
+
 	public void addOrdered(T element);
 }

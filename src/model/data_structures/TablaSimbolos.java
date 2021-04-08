@@ -1,19 +1,22 @@
 package model.data_structures;
 
-public class TablaSimbolos<K extends Comparable<K>, V extends Comparable<V>> implements ITablaSimbolos<K,V> {
+public class TablaSimbolos<K extends Comparable<K>, V extends Comparable<V>> implements ITablaSimbolos<K, V> {
 
 	private int size;
-	ILista<NodoTS<K,V>> elements;
+	ILista<NodoTS<K, V>> elements;
 	ILista<K> keys;
 	ILista<V> values;
 
 	public TablaSimbolos() {
 		this.size = 0;
+		keys = new ArregloDinamico<K>(10);
+		values = new ArregloDinamico<V>(10);
+		elements = new ArregloDinamico<NodoTS<K, V>>(10);
 	}
 
 	@Override
 	public void put(K key, V value) {
-		NodoTS<K,V> newNode = new NodoTS<>(key, value);
+		NodoTS<K, V> newNode = new NodoTS<>(key, value);
 		keys.addLast(key);
 		values.addLast(value);
 		elements.addLast(newNode);
@@ -27,7 +30,7 @@ public class TablaSimbolos<K extends Comparable<K>, V extends Comparable<V>> imp
 
 	@Override
 	public V remove(K key) {
-		NodoTS<K,V> node = elements.deleteElement(new NodoTS<K, V>(key, null));
+		NodoTS<K, V> node = elements.deleteElement(new NodoTS<K, V>(key, null));
 		keys.deleteElement(node.getKey());
 		values.deleteElement(node.getValue());
 		size--;
@@ -58,5 +61,5 @@ public class TablaSimbolos<K extends Comparable<K>, V extends Comparable<V>> imp
 	public ILista<V> valueSet() {
 		return values;
 	}
-	
+
 }

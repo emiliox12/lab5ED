@@ -336,4 +336,9 @@ public class ListaEncadenada<T extends Comparable<T>> implements ILista<T> {
 		}
 		return null;
 	}
+
+	@Override
+	public int compareTo(ILista<T> otherList) {
+		return this.firstElement().compareTo(otherList.firstElement());
+	}
 }
