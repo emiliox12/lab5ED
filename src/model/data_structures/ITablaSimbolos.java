@@ -44,5 +44,7 @@ public interface ITablaSimbolos<K extends Comparable<K>, V extends Comparable<V>
 	*Retorna todos los valores almacenados en la Tabla
 	**/
 	ILista<V> valueSet();
+	
+	int getMaxSize();
 
 }

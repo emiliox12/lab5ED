@@ -4,6 +4,11 @@ public class TablaHashSeparateChaining<K extends Comparable<K>, V extends Compar
 		implements ITablaSimbolos<K, V> {
 
 	private int maxSize;
+
+	public int getMaxSize() {
+		return maxSize;
+	}
+
 	private int size;
 	private int a;
 	private int b;
@@ -28,7 +33,6 @@ public class TablaHashSeparateChaining<K extends Comparable<K>, V extends Compar
 
 	public int hash(K key) {
 		int hash = key.hashCode();
-		System.out.println("key: " + key);
 		return (Math.abs((a * hash + b) % p) % maxSize);
 	}
 
@@ -67,8 +71,6 @@ public class TablaHashSeparateChaining<K extends Comparable<K>, V extends Compar
 		int pos = hash(key);
 		ILista<NodoTS<K, V>> subList = elements.getElement(pos);
 		subList.addLast(newNode);
-		keys.addLast(key);
-		values.addLast(value);
 		size++;
 	}
 
@@ -76,8 +78,10 @@ public class TablaHashSeparateChaining<K extends Comparable<K>, V extends Compar
 	public V get(K key) {
 		int pos = hash(key);
 		ILista<NodoTS<K, V>> subList = elements.getElement(pos);
-		if (subList == null) { return null; }
-		NodoTS<K,V> elem = subList.find(new NodoTS<K, V>(key, null));
+		if (subList == null) {
+			return null;
+		}
+		NodoTS<K, V> elem = subList.find(new NodoTS<K, V>(key, null));
 		return (elem != null) ? elem.getValue() : null;
 	}
 
@@ -118,7 +122,7 @@ public class TablaHashSeparateChaining<K extends Comparable<K>, V extends Compar
 	public ILista<V> valueSet() {
 		return values;
 	}
-	
+
 	@Override
 	public String toString() {
 		String res = "";

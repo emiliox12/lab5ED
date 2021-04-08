@@ -109,7 +109,7 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T>, Comp
 	@Override
 	public void insertElement(T element, int pos) {
 		int position = (pos <= maxSize) ? pos : maxSize;
-		elements[pos] = element;
+		elements[position] = element;
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public class ArregloDinamico<T extends Comparable<T>> implements ILista<T>, Comp
 
 	@Override
 	public T getElement(int pos) {
-		if (pos > currentSize || pos < 0) {
+		if (pos > maxSize || pos < 0) {
 			return null;
 		} else {
 			return elements[pos];

@@ -3,6 +3,11 @@ package model.data_structures;
 public class TablaHashLinearProbing<K extends Comparable<K>, V extends Comparable<V>> implements ITablaSimbolos<K, V> {
 
 	private int maxSize;
+
+	public int getMaxSize() {
+		return maxSize;
+	}
+
 	private int size;
 	private int a;
 	private int b;
@@ -12,15 +17,12 @@ public class TablaHashLinearProbing<K extends Comparable<K>, V extends Comparabl
 	ILista<V> values;
 
 	public TablaHashLinearProbing(int maxSize) {
-		elements = new ArregloDinamico<>(maxSize * 2);
+		elements = new ArregloDinamico<>(maxSize);
 		p = nextPrime(maxSize * 7);
-		this.maxSize = p;
+		this.maxSize = maxSize;
 		this.size = 0;
 		a = (int) (Math.random() * (maxSize + 1));
 		b = (int) (Math.random() * (maxSize + 1));
-		for (int i = 0; i < maxSize; i++) {
-			elements.addLast(null);
-		}
 	}
 
 	public int hash(K key) {
@@ -67,8 +69,6 @@ public class TablaHashLinearProbing<K extends Comparable<K>, V extends Comparabl
 			nodo = elements.getElement(pos);
 		}
 		elements.insertElement(newNode, pos);
-		keys.addLast(key);
-		values.addLast(value);
 		size++;
 	}
 

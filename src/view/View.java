@@ -14,8 +14,8 @@ public class View
 	    
 		public void printMenu()
 		{
-			System.out.println("1. Videos trending por país y categoría (req1)");
-			System.out.println("2. Video Trending de país (req2)");
+			System.out.println("1. Videos trending por país y categoría (req1 Linear Probing)");
+			System.out.println("2. Videos trending por país y categoría (req2  Separate Chaining)");
 			System.out.println("3. Video Trending por categoría (req3)");
 			System.out.println("4. Videos con más likes por país y tag (req4)");
 			System.out.println("5. cerrar");

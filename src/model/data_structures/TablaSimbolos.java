@@ -53,6 +53,11 @@ public class TablaSimbolos<K extends Comparable<K>, V extends Comparable<V>> imp
 	}
 
 	@Override
+	public int getMaxSize() {
+		return size;
+	}
+
+	@Override
 	public ILista<K> keySet() {
 		return keys;
 	}

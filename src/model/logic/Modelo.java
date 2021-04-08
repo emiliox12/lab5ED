@@ -3,6 +3,7 @@ package model.logic;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.Comparator;
+import java.util.Random;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -26,18 +27,15 @@ public class Modelo {
 	private ITablaSimbolos<String, ILista<YoutubeVideo>> videosChaining;
 	private ITablaSimbolos<String, ILista<YoutubeVideo>> videosProbing;
 	private ILista<Category> categories;
-	/**
-	 * Atributos del modelo del mundo
-	 */
-	private Ordenamiento<YoutubeVideo> sorter;
+	private ILista<String> validKeys;
 
 	/**
 	 * Constructor del modelo del mundo con capacidad predefinida
 	 */
 	public Modelo() {
-		sorter = new Ordenamiento<YoutubeVideo>();
-		videosChaining = new TablaHashSeparateChaining<>(50000);
-		videosProbing = new TablaHashLinearProbing<>(50000);
+		validKeys = new ArregloDinamico<>(20);
+		videosChaining = new TablaHashSeparateChaining<>(400);
+		videosProbing = new TablaHashLinearProbing<>(400);
 		categories = new ListaEncadenada<Category>();
 		// datos = new ListaEncadenada<YoutubeVideo>();
 		cargar();
@@ -66,7 +64,7 @@ public class Modelo {
 				Category category = new Category(id, name);
 				categories.addLast(category);
 			}
-			in = new FileReader("./data/videos-small-big.csv");
+			in = new FileReader("./data/videos-all.csv");
 			Iterable<CSVRecord> videosCsv = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
 			for (CSVRecord record : videosCsv) {
 				String trending_date = record.get(1);
@@ -90,12 +88,15 @@ public class Modelo {
 						publish_time, videoTags, views, likes, dislikes, comment_count, thumbnail_link,
 						comments_disabled, ratings_disabled, video_error_or_removed, descriptio, country);
 				Category category = categories.find(new Category("" + video.getCategory_id(), ""));
-				ILista<YoutubeVideo> videoList = videosChaining
-						.get(country.trim().toUpperCase() + category.getName().trim().toUpperCase());
+				String key = country.trim().toUpperCase() + category.getName().trim().toUpperCase();
+				if (validKeys.find(key) == null) {
+					validKeys.addLast(key);
+				}
+				ILista<YoutubeVideo> videoList = videosChaining.get(key);
 				if (videoList == null) {
 					videoList = new ArregloDinamico<YoutubeVideo>(100);
-					videosChaining.put(country.trim().toUpperCase() + category.getName().trim().toUpperCase(),
-							videoList);
+					videosChaining.put(key, videoList);
+					videosProbing.put(key, videoList);
 				}
 				videoList.addLast(video);
 				count++;
@@ -106,11 +107,34 @@ public class Modelo {
 		}
 		long end = System.currentTimeMillis();
 		System.out.println("Creación: " + (end - start));
-		System.out.println("size: " + count + " Duplas: " + videosChaining.size());
+		double cargaVideosChaining = Double.valueOf(videosChaining.size()) / Double.valueOf(videosChaining.getMaxSize());
+		double cargaVideosProbing = Double.valueOf(videosProbing.size()) / Double.valueOf(videosProbing.getMaxSize());
+		System.out.println("Separate Chaining: \n" + "size: " + videosChaining.getMaxSize() + " Duplas: "
+				+ videosChaining.size() + " (N/M): " + cargaVideosChaining);
+		System.out.println("Linear Probing: \n" + "size: " + videosProbing.getMaxSize() + " Duplas: "
+				+ videosProbing.size() + " (N/M): " + cargaVideosProbing);
 		// System.out.println(videosChaining.toString());
 	}
 
 	public String req1(String category_name, String country, int n) {
+		ILista<YoutubeVideo> list = videosProbing
+				.get(country.trim().toUpperCase() + category_name.trim().toUpperCase());
+		if (list == null) {
+			return null;
+		}
+		ILista<YoutubeVideo> resList = list.sublista(n);
+		String res = "trending_date" + "\t - \t" + "title" + "\t - \t" + "channel_title" + "\t - \t" + "publish_time"
+				+ "\t - \t" + "views" + "\t - \t" + "likes" + "\t - \t" + "dislikes" + "\n";
+		for (int i = 0; i < resList.size(); i++) {
+			YoutubeVideo yt = resList.getElement(i);
+			res += yt.getTrending_date().toString() + "\t" + yt.getTitle() + "\t" + yt.getChannel_title() + "\t"
+					+ yt.getPublish_time() + "\t" + yt.getViews() + "\t" + yt.getLikes() + "\t" + yt.getDislikes()
+					+ "\n";
+		}
+		return res;
+	}
+
+	public String req2(String category_name, String country, int n) {
 		ILista<YoutubeVideo> list = videosChaining
 				.get(country.trim().toUpperCase() + category_name.trim().toUpperCase());
 		if (list == null) {
@@ -126,6 +150,46 @@ public class Modelo {
 					+ "\n";
 		}
 		return res;
+	}
+
+	public String req3() {
+		Random rand = new Random();
+		long avg = 0;
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 700; i++) {
+			int rand_int1 = rand.nextInt(validKeys.size());
+			String randKey = validKeys.getElement(rand_int1);
+			ILista<YoutubeVideo> list = videosChaining.get(randKey);
+			if (list == null) {				
+				System.out.println(randKey); 
+			}
+		}
+		for (int i = 0; i < 300; i++) {
+			videosChaining.get("randKey");
+		}
+		long end = System.currentTimeMillis();
+		avg = (end-start);
+		return "Average: " + avg / 1000 + "(ms). Total search time: " + (end-start) + "(ms)";
+	}
+
+	public String req4() {
+		Random rand = new Random();
+		long avg = 0;
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 700; i++) {
+			int rand_int1 = rand.nextInt(validKeys.size());
+			String randKey = validKeys.getElement(rand_int1);
+			ILista<YoutubeVideo> list = videosProbing.get(randKey);
+			if (list == null) {				
+				System.out.println(randKey); 
+			}
+		}
+		for (int i = 0; i < 300; i++) {
+			videosProbing.get("randKey");
+		}
+		long end = System.currentTimeMillis();
+		avg = (end-start);
+		return "Average: " + avg / 1000 + "(ms). Total search time: " + (end-start) + "(ms)";
 	}
 
 	@Override
